@@ -7,7 +7,10 @@
 </head>
 <body>
     <div class="container">
-        <h1>Мои привычки</h1>
+        <div class ="header-row">
+            <h1>Мои привычки</h1>
+            <a href="{{ url_for('logout') }}" class="logout-link">Выйти ({{ username }})</a>
+        </div>
         <p class="today">Сегодня: {{ today }}</p>
 
         <!-- Форма добавления новой привычки -->
