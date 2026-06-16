@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Трекер привычек</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Мои привычки</h1>
+        <p class="today">Сегодня: {{ today }}</p>
+
+        <!-- Форма добавления новой привычки -->
+        <form action="{{ url_for('add_habit') }}" method="POST" class="add-form">
+            <input type="text" name="name" placeholder="Например: Читать 20 минут" required>
+            <button type="submit">Добавить</button>
+        </form>
+
+        <!-- Список привычек -->
+        <ul class="habit-list">
+            {% for habit in habits %}
+            <li class="habit-item {% if habit.done_today %}done{% endif %}">
+                <span class="habit-name">{{ habit.name }}</span>
+                <span class="habit-count">Выполнено всего: {{ habit.total_count }} раз</span>
+
+                <form action="{{ url_for('check_habit', habit_id=habit.id) }}" method="POST" class="inline-form">
+                    <button type="submit" {% if habit.done_today %}disabled{% endif %}>
+                        {% if habit.done_today %}✓ Сделано{% else %}Отметить{% endif %}
+                    </button>
+                </form>
+
+                <form action="{{ url_for('delete_habit', habit_id=habit.id) }}" method="POST" class="inline-form">
+                    <button type="submit" class="delete-btn">Удалить</button>
+                </form>
+            </li>
+            {% else %}
+            <p>Пока нет привычек. Добавь первую!</p>
+            {% endfor %}
+        </ul>
+    </div>
+</body>
+</html>
