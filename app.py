@@ -7,7 +7,7 @@ Habit Tracker — простой трекер привычек.
 
 from flask import Flask, render_template, request, redirect, url_for
 import sqlite3
-from datetime import date
+from datetime import date, timedelta
 
 app = Flask(__name__)
 DB_NAME = "habits.db"
@@ -40,6 +40,29 @@ def init_db():
     conn.commit()
     conn.close()
 
+def calculate_streak(conn, habit_id):
+    """
+    Считаем текущий стрик (серию дней подряд без пропуска) для привычки.
+    Идём от сегодняшнего дня назад: если день отмечен - увеличиваем стрик
+    и переходим к предыдущему дню; как только встретили пропущенный день
+    (и это не "сегодня", которое может быть ещё не отмечено) - останавливаемся.
+    """
+    rows = conn.execute(
+        "SELECT log_date FROM logs WHERE habit_id = ? ORDER BY log_date DESC",
+        (habit_id,)
+    ).fetchall()
+    done_dates = {row["log_date"] for row in rows}
+
+    streak = 0
+    current_day = date.today()
+
+    if current_day.isoformat() not in done_dates:
+        current_day -= timedelta(days=1)
+
+    while current_day.isoformat()in done_dates:
+        streak += 1
+        current_day -= timedelta(days=1)
+    return streak
 
 @app.route("/")
 def index():
@@ -58,11 +81,13 @@ def index():
             "SELECT COUNT(*) as cnt FROM logs WHERE habit_id = ?",
             (habit["id"],)
         ).fetchone()["cnt"]
+        streak = calculate_streak(conn, habit["id"])
         habits_with_status.append({
             "id": habit["id"],
             "name": habit["name"],
             "done_today": done_today is not None,
-            "total_count": total_count
+            "total_count": total_count,
+            "streak": streak
         })
 
     conn.close()

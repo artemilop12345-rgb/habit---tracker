@@ -83,6 +83,11 @@ h1 {
     color: #999;
     font-size: 13px;
 }
+.habit-streak {
+    color:#e67e22;
+    front-size: 14px;
+    front-weight: 620;
+}
 
 .inline-form {
     display: inline;

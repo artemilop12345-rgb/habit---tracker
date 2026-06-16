@@ -22,6 +22,7 @@
             <li class="habit-item {% if habit.done_today %}done{% endif %}">
                 <span class="habit-name">{{ habit.name }}</span>
                 <span class="habit-count">Выполнено всего: {{ habit.total_count }} раз</span>
+                <span class="habit-streak">🔥 Стрик: {{ habit.streak }} дн.</span>
 
                 <form action="{{ url_for('check_habit', habit_id=habit.id) }}" method="POST" class="inline-form">
                     <button type="submit" {% if habit.done_today %}disabled{% endif %}>
